@@ -1,17 +1,5 @@
 import groovy.xml.MarkupBuilder
-def ParseToHTMLTable(headers, params) {
-  def writer = new StringWriter()
-  new MarkupBuilder(writer).table() {
-    tr {headers.each { title -> th(title) }}
-    params.each { row ->
-      tr {
-        td(row.key)
-        td(row.value)
-      }
-    }
-  }
-  return writer.toString()
-}
+
 
 def params = [
   "Job": "JobName",
@@ -23,4 +11,19 @@ def params = [
   "InProgress count": 1
 ]
 
+import groovy.xml.MarkupBuilder
+@NonCPS
+def ParseToHTMLTable(headers, params) {
+  def writer = new StringWriter()
+  new MarkupBuilder(writer).table() {
+    delegate.tr {headers.each { title -> delegate.delegate.th(title) }}
+    params.each { row ->
+      delegate.delegate.tr {
+        delegate.td(row.key)
+        delegate.td(row.value)
+      }
+    }
+  }
+  return writer.toString()
+}
 println ParseToHTMLTable(["Parameter","Value"], params)
